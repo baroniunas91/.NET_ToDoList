@@ -21,5 +21,11 @@ namespace ToDoList.RestfulAPI.Controllers
         {
             return _todoRepository.Get();
         }
+
+        [HttpPost]
+        public void Post(Todo todo)
+        {
+            _todoRepository.AddTodo(todo);
+        }
     }
 }
