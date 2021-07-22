@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ToDoList.RestfulAPI.Interfaces;
+using ToDoList.RestfulAPI.Repositories;
 
 namespace ToDoList.RestfulAPI
 {
@@ -25,6 +27,7 @@ namespace ToDoList.RestfulAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<ITodoRepository, TodoRepository>();
             services.AddControllers();
 
             services.AddSwaggerGen();
