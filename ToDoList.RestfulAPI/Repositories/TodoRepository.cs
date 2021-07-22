@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ToDoList.RestfulAPI.Data;
+using ToDoList.RestfulAPI.Dto;
 using ToDoList.RestfulAPI.Interfaces;
 using ToDoList.RestfulAPI.Models;
 
@@ -24,8 +25,10 @@ namespace ToDoList.RestfulAPI.Repositories
             return todos;
         }
 
-        public void AddTodo(Todo todo)
+        public void AddTodo(TodoDto todoDto)
         {
+            var todo = new Todo();
+            todo.Title = todoDto.Title;
             _context.Add(todo);
             _context.SaveChanges();
         }

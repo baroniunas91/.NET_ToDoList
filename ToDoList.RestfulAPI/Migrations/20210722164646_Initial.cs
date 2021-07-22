@@ -14,7 +14,7 @@ namespace ToDoList.RestfulAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Title = table.Column<string>(type: "text", nullable: true),
-                    IsDone = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    IsDone = table.Column<bool>(type: "tinyint(0)", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {

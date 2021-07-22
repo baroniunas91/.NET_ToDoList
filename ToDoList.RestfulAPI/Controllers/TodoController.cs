@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using ToDoList.RestfulAPI.Dto;
 using ToDoList.RestfulAPI.Interfaces;
 using ToDoList.RestfulAPI.Models;
 
@@ -23,9 +24,9 @@ namespace ToDoList.RestfulAPI.Controllers
         }
 
         [HttpPost]
-        public void Post(Todo todo)
+        public void Post(TodoDto todoDto)
         {
-            _todoRepository.AddTodo(todo);
+            _todoRepository.AddTodo(todoDto);
         }
     }
 }

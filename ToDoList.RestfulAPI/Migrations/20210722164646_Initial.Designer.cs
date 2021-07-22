@@ -8,7 +8,7 @@ using ToDoList.RestfulAPI.Data;
 namespace ToDoList.RestfulAPI.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20210722155544_Initial")]
+    [Migration("20210722164646_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
