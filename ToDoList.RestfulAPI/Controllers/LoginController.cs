@@ -11,7 +11,6 @@ using ToDoList.RestfulAPI.Models;
 
 namespace ToDoList.RestfulAPI.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class LoginController : ControllerBase
@@ -24,9 +23,7 @@ namespace ToDoList.RestfulAPI.Controllers
             this.jwtAuthenticationManager = jwtAuthenticationManager;
             _context = context;
         }
-
-        public IJwtAuthenticationManager JwtAuthenticationManager { get; }
-
+        [Authorize(Roles = "administrator")]
         [HttpGet]
         public IEnumerable<string> Get()
         {

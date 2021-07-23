@@ -13,8 +13,6 @@ namespace ToDoList.RestfulAPI.Models
 {
     public class JwtAuthenticationManager : IJwtAuthenticationManager
     {
-        //private readonly IDictionary<string, string> users = new Dictionary<string, string>
-            //{{"test1@test.lt", "password1"},{"test2@test.lt", "password2"}};
         private readonly string key;
 
         public JwtAuthenticationManager(string key)
@@ -28,12 +26,15 @@ namespace ToDoList.RestfulAPI.Models
                 return null;
             }
 
+            var loggedUser = users.First(user => user.EmailAddress == emailAddress);
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(key);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[] {
-                    new Claim(ClaimTypes.Name, emailAddress)
+                    new Claim(ClaimTypes.Name, emailAddress),
+                    new Claim("role", loggedUser.Role)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(
