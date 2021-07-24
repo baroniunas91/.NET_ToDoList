@@ -19,8 +19,8 @@ namespace ToDoList.RestfulAPI.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasData(
-                new User() { Id = 1, EmailAddress = "admin@test.lt", Password = "admin", Role = "administrator" },
-                new User() { Id = 2, EmailAddress = "user@test.lt", Password = "user", Role = "user" }
+                new User() { Id = 1, EmailAddress = "admin@test.lt", Password = "labasrytas123", Role = "administrator" },
+                new User() { Id = 2, EmailAddress = "user@test.lt", Password = "labasrytas123", Role = "user" }
             );
         }
     }
