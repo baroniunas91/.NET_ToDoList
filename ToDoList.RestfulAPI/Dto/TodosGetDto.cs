@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ToDoList.RestfulAPI.Models
+namespace ToDoList.RestfulAPI.Dto
 {
-    public class Todo
+    public class TodosGetDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public bool IsDone { get; set; } = false;
-        public User User { get; set; }
+        public bool IsDone { get; set; }
     }
 }

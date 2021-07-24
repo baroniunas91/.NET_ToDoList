@@ -19,6 +19,7 @@ namespace ToDoList.RestfulAPI.Models
         {
             this.key = key;
         }
+
         public string Authenticate(string emailAddress, string password, List<User> users)
         {
             if(!users.Any(u => u.EmailAddress == emailAddress && u.Password == password))

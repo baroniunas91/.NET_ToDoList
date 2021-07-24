@@ -10,7 +10,9 @@ namespace ToDoList.RestfulAPI.Interfaces
 {
     public interface ITodoRepository
     {
-        List<Todo> Get();
-        void AddTodo(TodoDto todoDto);
+        List<TodosGetDto> Get();
+        void AddTodo(TodoDto todoDto, string loggedUserEmail);
+        void UpdateTodo(TodoDto todoDto);
+        void DeleteTodo(int id);
     }
 }

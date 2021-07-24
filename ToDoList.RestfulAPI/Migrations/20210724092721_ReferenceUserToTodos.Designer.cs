@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ToDoList.RestfulAPI.Data;
 
 namespace ToDoList.RestfulAPI.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210724092721_ReferenceUserToTodos")]
+    partial class ReferenceUserToTodos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,11 +79,9 @@ namespace ToDoList.RestfulAPI.Migrations
 
             modelBuilder.Entity("ToDoList.RestfulAPI.Models.Todo", b =>
                 {
-                    b.HasOne("ToDoList.RestfulAPI.Models.User", "User")
+                    b.HasOne("ToDoList.RestfulAPI.Models.User", null)
                         .WithMany("Todos")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ToDoList.RestfulAPI.Models.User", b =>
