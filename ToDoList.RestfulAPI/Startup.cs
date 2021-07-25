@@ -35,7 +35,8 @@ namespace ToDoList.RestfulAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MyDbContext>(o => o.UseMySQL(Configuration.GetConnectionString("Default")));
-            services.AddScoped<ITodoRepository, TodoRepository>();
+            services.AddScoped<IAdminTodoRepository, AdminTodoRepository>();
+            services.AddScoped<IUserTodoRepository, UserTodoRepository>();
             services.AddControllers();
             var key = "This is my test key";
 

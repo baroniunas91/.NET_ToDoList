@@ -23,7 +23,7 @@ namespace ToDoList.RestfulAPI.Controllers
             this.jwtAuthenticationManager = jwtAuthenticationManager;
             _context = context;
         }
-        [Authorize(Roles = "administrator")]
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public IEnumerable<string> Get()
         {

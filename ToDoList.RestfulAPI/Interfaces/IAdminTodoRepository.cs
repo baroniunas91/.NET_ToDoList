@@ -8,11 +8,9 @@ using ToDoList.RestfulAPI.Models;
 
 namespace ToDoList.RestfulAPI.Interfaces
 {
-    public interface ITodoRepository
+    public interface IAdminTodoRepository
     {
         List<TodosGetDto> Get();
-        void AddTodo(TodoDto todoDto, string loggedUserEmail);
-        void UpdateTodo(TodoDto todoDto);
         void DeleteTodo(int id);
     }
 }
