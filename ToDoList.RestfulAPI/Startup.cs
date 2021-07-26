@@ -19,6 +19,7 @@ using ToDoList.RestfulAPI.Data;
 using ToDoList.RestfulAPI.Interfaces;
 using ToDoList.RestfulAPI.Models;
 using ToDoList.RestfulAPI.Repositories;
+using ToDoList.RestfulAPI.Services;
 
 namespace ToDoList.RestfulAPI
 {
@@ -34,6 +35,7 @@ namespace ToDoList.RestfulAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddDbContext<MyDbContext>(o => o.UseMySQL(Configuration.GetConnectionString("Default")));
             services.AddScoped<IAdminTodoRepository, AdminTodoRepository>();
             services.AddScoped<IUserTodoRepository, UserTodoRepository>();
@@ -92,6 +94,14 @@ namespace ToDoList.RestfulAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+
+            var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+            using (var scope = scopeFactory.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetService<IDbInitializer>();
+                dbInitializer.Initialize();
+                dbInitializer.SeedData();
             }
 
             app.UseHttpsRedirection();

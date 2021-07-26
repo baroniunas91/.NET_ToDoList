@@ -22,15 +22,16 @@ namespace ToDoList.RestfulAPI.Controllers
         }
 
         [HttpGet]
-        public List<TodosGetDto> Get()
+        public IActionResult Get()
         {
-            return _adminTodoRepository.Get();
+            return Ok(_adminTodoRepository.Get());
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
             _adminTodoRepository.DeleteTodo(id);
+            return Ok();
         }
     }
 }
