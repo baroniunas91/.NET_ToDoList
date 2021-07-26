@@ -25,31 +25,48 @@ namespace ToDoList.RestfulAPI.Controllers
         }
 
         [HttpGet]
-        public List<TodosGetDto> Get()
+        public IActionResult Get()
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
-            return _userTodoRepository.GetUserTodos(_loggedUser);
+            return Ok(_userTodoRepository.GetUserTodos(_loggedUser));
         }
 
         [HttpPost]
-        public void Post(TodoDto todoDto)
+        public IActionResult Post(TodoDto todoDto)
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
             _userTodoRepository.AddUserTodo(todoDto, _loggedUser);
+            return Ok();
         }
 
         [HttpPut]
-        public void Put(TodoDto todoDto)
+        public IActionResult Put(TodoDto todoDto)
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
-            _userTodoRepository.UpdateUserTodo(todoDto, _loggedUser);
+            try
+            {
+                _userTodoRepository.UpdateUserTodo(todoDto, _loggedUser);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest("The is no such todo in your todos list!");
+            }
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
-            _userTodoRepository.DeleteUserTodo(id, _loggedUser);
+            try
+            {
+                _userTodoRepository.DeleteUserTodo(id, _loggedUser);
+                return Ok();
+            }
+            catch(Exception)
+            {
+                return BadRequest("The is no such todo in your todos list!");
+            }
         }
 
     }
