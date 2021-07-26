@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -17,20 +18,21 @@ namespace ToDoList.RestfulAPI.Controllers
     {
         private readonly IJwtAuthenticationManager jwtAuthenticationManager;
         private readonly MyDbContext _context;
+        private readonly IMapper _mapper;
 
-        public LoginController(IJwtAuthenticationManager jwtAuthenticationManager, MyDbContext context)
+        public LoginController(IJwtAuthenticationManager jwtAuthenticationManager, MyDbContext context, IMapper mapper)
         {
             this.jwtAuthenticationManager = jwtAuthenticationManager;
             _context = context;
-        }
-        [Authorize(Roles = "admin")]
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "labas", "labas2" };
+            _mapper = mapper;
         }
 
-        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok(_context.Users.OrderBy(x => x.Id).ToList());
+        }
+
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserCred userCred)
         {
@@ -40,6 +42,17 @@ namespace ToDoList.RestfulAPI.Controllers
                 return Unauthorized();
             };
             return Ok(token);
+        }
+
+        [HttpPost("signup")]
+        public IActionResult SignUp([FromBody] UserCred userCred)
+        {
+            userCred.Password = BCrypt.Net.BCrypt.HashPassword(userCred.Password);
+            var user = _mapper.Map<User>(userCred);
+            user.Role = "user";
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }

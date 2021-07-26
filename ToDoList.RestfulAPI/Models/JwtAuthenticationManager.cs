@@ -22,7 +22,13 @@ namespace ToDoList.RestfulAPI.Models
 
         public string Authenticate(string emailAddress, string password, List<User> users)
         {
-            if(!users.Any(u => u.EmailAddress == emailAddress && u.Password == password))
+            var user = users.FirstOrDefault(x => x.EmailAddress == emailAddress);
+            bool isValidPassword = false;
+            if (user != null)
+            {
+                isValidPassword = BCrypt.Net.BCrypt.Verify(password, user.Password);
+            }
+            if(!users.Any(u => u.EmailAddress == emailAddress && isValidPassword))
             {
                 return null;
             }

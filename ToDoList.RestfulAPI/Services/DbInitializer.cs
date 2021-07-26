@@ -10,10 +10,12 @@ namespace ToDoList.RestfulAPI.Services
     public class DbInitializer : IDbInitializer
     {
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly string _password;
 
         public DbInitializer(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
+            _password = BCrypt.Net.BCrypt.HashPassword("labasrytas123");
         }
 
         public void Initialize()
@@ -36,11 +38,12 @@ namespace ToDoList.RestfulAPI.Services
                     //seed admin and users
                     if (!context.Users.Any())
                     {
+                        var password = BCrypt.Net.BCrypt.HashPassword("labasrytas123");
                         var adminUser = new User
                         {
                             Id = 1,
                             EmailAddress = "admin@test.lt",
-                            Password = "labasrytas123", // should be hash
+                            Password = _password,
                             Role = "admin"
                         };
                         context.Users.Add(adminUser);
@@ -48,7 +51,7 @@ namespace ToDoList.RestfulAPI.Services
                         {
                             Id = 2,
                             EmailAddress = "user1@test.lt",
-                            Password = "labasrytas123", // should be hash
+                            Password = _password,
                             Role = "user"
                         };
                         context.Users.Add(user1);
@@ -56,7 +59,7 @@ namespace ToDoList.RestfulAPI.Services
                         {
                             Id = 3,
                             EmailAddress = "user2@test.lt",
-                            Password = "labasrytas123", // should be hash
+                            Password = _password,
                             Role = "user"
                         };
                         context.Users.Add(user2);

@@ -36,50 +36,6 @@ namespace ToDoList.RestfulAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Todos");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IsDone = false,
-                            Title = "Wash dishes",
-                            UserId = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            IsDone = false,
-                            Title = "Clean table",
-                            UserId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            IsDone = false,
-                            Title = "Wash car",
-                            UserId = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            IsDone = false,
-                            Title = "Do homework",
-                            UserId = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            IsDone = false,
-                            Title = "Go to the gym",
-                            UserId = 3
-                        },
-                        new
-                        {
-                            Id = 6,
-                            IsDone = false,
-                            Title = "Write a book",
-                            UserId = 3
-                        });
                 });
 
             modelBuilder.Entity("ToDoList.RestfulAPI.Models.User", b =>
@@ -100,29 +56,6 @@ namespace ToDoList.RestfulAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            EmailAddress = "admin@test.lt",
-                            Password = "labasrytas123",
-                            Role = "admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            EmailAddress = "user1@test.lt",
-                            Password = "labasrytas123",
-                            Role = "user"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            EmailAddress = "user2@test.lt",
-                            Password = "labasrytas123",
-                            Role = "user"
-                        });
                 });
 
             modelBuilder.Entity("ToDoList.RestfulAPI.Models.Todo", b =>
