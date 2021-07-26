@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -30,8 +31,15 @@ namespace ToDoList.RestfulAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _adminTodoRepository.DeleteTodo(id);
-            return Ok();
+            try
+            {
+                _adminTodoRepository.DeleteTodo(id);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest("The is no such todo in todos list!");
+            }
         }
     }
 }
