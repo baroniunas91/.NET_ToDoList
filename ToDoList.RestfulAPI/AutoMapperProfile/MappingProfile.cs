@@ -25,6 +25,10 @@ namespace ToDoList.RestfulAPI.AutoMapperProfile
                 .ForMember(i => i.EmailAddress, dto =>
                 dto.MapFrom(c => c.EmailAddress))
                 .ReverseMap();
+            CreateMap<UserDto, User>()
+                .ForMember(i => i.EmailAddress, dto =>
+                dto.MapFrom(c => c.EmailAddress))
+                .ReverseMap();
         }
     }
 }
