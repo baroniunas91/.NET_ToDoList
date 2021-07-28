@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ToDoList.RestfulAPI.Data;
 using ToDoList.RestfulAPI.Dto;
 using ToDoList.RestfulAPI.Interfaces;
@@ -20,9 +22,9 @@ namespace ToDoList.RestfulAPI.Repositories
             _mapper = mapper;
         }
 
-        public List<TodosGetDto> GetUserTodos(string loggedUser)
+        public async Task<List<TodosGetDto>> GetUserTodos(string loggedUser)
         {
-            var todos = _context.Todos.OrderBy(x => x.Id).Where(x => x.User.EmailAddress == loggedUser).ToList();
+            var todos = await _context.Todos.OrderBy(x => x.Id).Where(x => x.User.EmailAddress == loggedUser).ToListAsync();
             var todosList = new List<TodosGetDto>();
             foreach (var todo in todos)
             {
@@ -32,23 +34,23 @@ namespace ToDoList.RestfulAPI.Repositories
             return todosList;
         }
 
-        public void AddUserTodo(TodoDto todoDto, string loggedUser)
+        public async Task AddUserTodo(TodoDto todoDto, string loggedUser)
         {
-            var user = _context.Users.First(x => x.EmailAddress == loggedUser);
+            var user = await _context.Users.FirstAsync(x => x.EmailAddress == loggedUser);
             var todo = _mapper.Map<Todo>(todoDto);
             todo.User = user;
             _context.Add(todo);
             _context.SaveChanges();
         }
 
-        public void UpdateUserTodo(TodoDto todoDto, string loggedUser)
+        public async Task UpdateUserTodo(TodoDto todoDto, string loggedUser)
         {
             bool isItInUserTodosList = _context.Todos.Where(x => x.User.EmailAddress == loggedUser).Any(x => x.Id == todoDto.Id);
             
             if (isItInUserTodosList)
             {
                 var todo = _mapper.Map<Todo>(todoDto);
-                var user = _context.Users.FirstOrDefault(x => x.EmailAddress == loggedUser);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.EmailAddress == loggedUser);
                 todo.UserId = user.Id;
                 todo.User = user;
                 _context.Todos.Update(todo);
@@ -60,12 +62,12 @@ namespace ToDoList.RestfulAPI.Repositories
             }
         }
 
-        public void DeleteUserTodo(int id, string loggedUser)
+        public async Task DeleteUserTodo(int id, string loggedUser)
         {
             bool isItInUserTodosList = _context.Todos.Where(x => x.User.EmailAddress == loggedUser).Any(x => x.Id == id);
             if (isItInUserTodosList)
             {
-                var todo = _context.Todos.First(i => i.Id == id);
+                var todo = await _context.Todos.FirstAsync(i => i.Id == id);
                 _context.Todos.Remove(todo);
                 _context.SaveChanges();
             }

@@ -9,9 +9,9 @@ namespace ToDoList.RestfulAPI.Interfaces
 {
     public interface IUserTodoRepository
     {
-        List<TodosGetDto> GetUserTodos(string loggedUser);
-        void AddUserTodo(TodoDto todoDto, string loggedUser);
-        void UpdateUserTodo(TodoDto todoDto, string loggedUser);
-        void DeleteUserTodo(int id, string loggedUser);
+        Task<List<TodosGetDto>> GetUserTodos(string loggedUser);
+        Task AddUserTodo(TodoDto todoDto, string loggedUser);
+        Task UpdateUserTodo(TodoDto todoDto, string loggedUser);
+        Task DeleteUserTodo(int id, string loggedUser);
     }
 }

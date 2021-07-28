@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ToDoList.RestfulAPI.Data;
 using ToDoList.RestfulAPI.Dto;
 using ToDoList.RestfulAPI.Interfaces;
@@ -18,9 +20,9 @@ namespace ToDoList.RestfulAPI.Repositories
             _mapper = mapper;
         }
 
-        public List<TodosGetDto> Get()
+        public async Task<List<TodosGetDto>> Get()
         {
-            var todos = _context.Todos.OrderBy(x => x.Id).ToList();
+            var todos = await _context.Todos.OrderBy(x => x.Id).ToListAsync();
             var todosList = new List<TodosGetDto>();
             foreach (var todo in todos)
             {
@@ -30,9 +32,9 @@ namespace ToDoList.RestfulAPI.Repositories
             return todosList;
         }
 
-        public void DeleteTodo(int id)
+        public async Task DeleteTodo(int id)
         {
-            var todo = _context.Todos.First(i => i.Id == id);
+            var todo = await _context.Todos.FirstAsync(i => i.Id == id);
             _context.Todos.Remove(todo);
             _context.SaveChanges();
         }

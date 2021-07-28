@@ -25,27 +25,27 @@ namespace ToDoList.RestfulAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
-            return Ok(_userTodoRepository.GetUserTodos(_loggedUser));
+            return Ok(await _userTodoRepository.GetUserTodos(_loggedUser));
         }
 
         [HttpPost]
-        public IActionResult Post(TodoDto todoDto)
+        public async Task<IActionResult> Post(TodoDto todoDto)
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
-            _userTodoRepository.AddUserTodo(todoDto, _loggedUser);
+            await _userTodoRepository.AddUserTodo(todoDto, _loggedUser);
             return Ok();
         }
 
         [HttpPut]
-        public IActionResult Put(TodoDto todoDto)
+        public async Task <IActionResult> Put(TodoDto todoDto)
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
             try
             {
-                _userTodoRepository.UpdateUserTodo(todoDto, _loggedUser);
+                await _userTodoRepository.UpdateUserTodo(todoDto, _loggedUser);
                 return Ok();
             }
             catch (Exception)
@@ -55,12 +55,12 @@ namespace ToDoList.RestfulAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
             try
             {
-                _userTodoRepository.DeleteUserTodo(id, _loggedUser);
+                await _userTodoRepository.DeleteUserTodo(id, _loggedUser);
                 return Ok();
             }
             catch(Exception)

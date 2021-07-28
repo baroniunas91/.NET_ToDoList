@@ -10,7 +10,7 @@ namespace ToDoList.RestfulAPI.Interfaces
 {
     public interface IAdminTodoRepository
     {
-        List<TodosGetDto> Get();
-        void DeleteTodo(int id);
+        Task<List<TodosGetDto>> Get();
+        Task DeleteTodo(int id);
     }
 }

@@ -37,9 +37,9 @@ namespace ToDoList.RestfulAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "admin")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var users = _context.Users.OrderBy(x => x.Id).ToList();
+            var users = await _context.Users.OrderBy(x => x.Id).ToListAsync();
             var usersDto = new List<UserDto>();
             foreach (var user in users)
             {
@@ -50,9 +50,9 @@ namespace ToDoList.RestfulAPI.Controllers
         }
 
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] UserCred userCred)
+        public async Task<IActionResult> Authenticate([FromBody] UserCred userCred)
         {
-            var users = _context.Users.OrderBy(x => x.Id).ToList();
+            var users = await _context.Users.OrderBy(x => x.Id).ToListAsync();
             var token = _jwtAuthenticationManager.Authenticate(userCred.EmailAddress, userCred.Password, users);
             if (token == null)
             {
@@ -62,13 +62,13 @@ namespace ToDoList.RestfulAPI.Controllers
         }
 
         [HttpPost("signup")]
-        public IActionResult SignUp([FromBody] UserCred userCred)
+        public async Task<IActionResult> SignUp([FromBody] UserCred userCred)
         {
             userCred.Password = BCrypt.Net.BCrypt.HashPassword(userCred.Password);
             var user = _mapper.Map<User>(userCred);
             user.Role = "user";
             _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
