@@ -5,8 +5,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using ToDoList.RestfulAPI.Data;
 using ToDoList.RestfulAPI.Interfaces;
 
 namespace ToDoList.RestfulAPI.Models

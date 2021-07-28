@@ -1,16 +1,9 @@
 ﻿using AutoMapper;
-using FluentEmail.Core;
-using FluentEmail.Razor;
-using FluentEmail.Smtp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using ToDoList.RestfulAPI.Data;
 using ToDoList.RestfulAPI.Dto;
