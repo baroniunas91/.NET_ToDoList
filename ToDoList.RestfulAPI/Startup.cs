@@ -34,8 +34,6 @@ namespace ToDoList.RestfulAPI
             services.AddScoped<IAdminTodoRepository, AdminTodoRepository>();
             services.AddScoped<IUserTodoRepository, UserTodoRepository>();
             services.AddControllers();
-            var key = "This is my test key";
-
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -47,14 +45,13 @@ namespace ToDoList.RestfulAPI
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("MyKey").Value)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                 };
             });
             services.AddAutoMapper(typeof(Startup));
-            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
-
+            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(Configuration.GetSection("MyKey").Value));
             services.AddSwaggerGen(config => {
                 config.SwaggerDoc("v1", new OpenApiInfo() { Title = "WebAPI", Version = "v1" });
                 config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

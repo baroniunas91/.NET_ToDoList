@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,12 +22,14 @@ namespace ToDoList.RestfulAPI.Controllers
         private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
         private readonly MyDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
 
-        public LoginController(IJwtAuthenticationManager jwtAuthenticationManager, MyDbContext context, IMapper mapper)
+        public LoginController(IJwtAuthenticationManager jwtAuthenticationManager, MyDbContext context, IMapper mapper, IConfiguration configuration)
         {
             _jwtAuthenticationManager = jwtAuthenticationManager;
             _context = context;
             _mapper = mapper;
+            _config = configuration;
         }
 
         [HttpGet]
@@ -46,7 +50,7 @@ namespace ToDoList.RestfulAPI.Controllers
         public async Task<IActionResult> Authenticate([FromBody] UserCred userCred)
         {
             var users = await _context.Users.OrderBy(x => x.Id).ToListAsync();
-            var token = _jwtAuthenticationManager.Authenticate(userCred.EmailAddress, userCred.Password, users);
+            var token = _jwtAuthenticationManager.Authenticate(userCred, users);
             if (token == null)
             {
                 return Unauthorized();
@@ -65,20 +69,51 @@ namespace ToDoList.RestfulAPI.Controllers
             return Ok();
         }
 
-        [HttpPost("forgot-password-email")]
+        [HttpPost("ForgotPasswordEmail")]
         public async Task<IActionResult> ForgotPasswordEmail([FromBody] ForgotPasswordEmail forgotPasswordEmail)
         {
             var users = await _context.Users.OrderBy(x => x.Id).ToListAsync();
             var user = users.FirstOrDefault(x => x.EmailAddress == forgotPasswordEmail.EmailAddress);
             if (user != null)
             {
-                await SendEmailService.Send(forgotPasswordEmail);
-                return Ok();
+                var token = _jwtAuthenticationManager.GenerateJwtToken(user.Id);
+                string url = $"{_config["AppUrl"]}/Login/ResetPassword?userId={user.Id}&token={token}";
+                await SendEmailService.Send(forgotPasswordEmail, url);
+                return Ok("Reset Password link was sent to your email. Go check it!");
             }
             else
             {
                 return BadRequest("The is no such user in our system!");
             }
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto, [FromQuery] int userId, [FromQuery] string token)
+        {
+            int? userIdfromToken = _jwtAuthenticationManager.ValidateJwtToken(token);
+            if(resetPasswordDto.NewPassword != resetPasswordDto.ConfirmPassword)
+            {
+                return BadRequest("The password and confirmation password do not match!");
+            }
+            if(userIdfromToken != null && userIdfromToken == userId)
+            {
+                try
+                {
+                    var user = await _context.Users.FirstAsync(x => x.Id == userIdfromToken);
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(resetPasswordDto.NewPassword);
+                    _context.Users.Update(user);
+                    await _context.SaveChangesAsync();
+                    return Ok("Password changed successfully!");
+                }
+                catch (Exception)
+                {
+                    return BadRequest("Sorry, we didn't change your password!");
+                }
+            } else
+            {
+                return BadRequest("Sorry, something went wrong!");
+            }
+            
         }
     }
 }

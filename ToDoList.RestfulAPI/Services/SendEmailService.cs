@@ -1,5 +1,6 @@
 ﻿using FluentEmail.Core;
 using FluentEmail.Smtp;
+using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -9,7 +10,13 @@ namespace ToDoList.RestfulAPI.Services
 {
     public class SendEmailService
     {
-        public static async Task Send(ForgotPasswordEmail forgotPasswordEmail)
+        private readonly IConfiguration _config;
+
+        public SendEmailService(IConfiguration configuration)
+        {
+            _config = configuration;
+        }
+        public static async Task Send(ForgotPasswordEmail forgotPasswordEmail, string resetPasswordUrl)
         {
             var sender = new SmtpSender(() => new SmtpClient("smtp.gmail.com", 587)
             {
@@ -21,9 +28,9 @@ namespace ToDoList.RestfulAPI.Services
 
             Email.DefaultSender = sender;
 
-            var formattedHtml = $"<h2>Hello user,</h2>" +
+            var formattedHtml = $"<h2>Do you want to reset your password?</h2>" +
                 $"<p>A request has been received to change the password for your {forgotPasswordEmail.EmailAddress} account. Please click link below to reset your password</p>" +
-                $"<p>https://localhost:44304/login/reset-password/{forgotPasswordEmail.EmailAddress}</p>";
+                $"<p>{resetPasswordUrl}</p>";
 
             var email = await Email
                 .From("smtpedgaras@gmail.com")
@@ -31,6 +38,10 @@ namespace ToDoList.RestfulAPI.Services
                 .Subject("Reset password link")
                 .UsingTemplate(formattedHtml, true)
                 .SendAsync();
+        }
+        public void kazkas()
+        {
+            _config.GetValue<string>("MyKey");
         }
     }
 }

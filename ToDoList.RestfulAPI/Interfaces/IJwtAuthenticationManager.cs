@@ -5,6 +5,8 @@ namespace ToDoList.RestfulAPI.Interfaces
 {
     public interface IJwtAuthenticationManager
     {
-        string Authenticate(string username, string password, List<User> users);
+        string Authenticate(UserCred userCred, List<User> users);
+        string GenerateJwtToken(int userId);
+        int? ValidateJwtToken(string token);
     }
 }

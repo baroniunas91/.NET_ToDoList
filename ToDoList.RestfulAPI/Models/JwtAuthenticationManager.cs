@@ -11,34 +11,34 @@ namespace ToDoList.RestfulAPI.Models
 {
     public class JwtAuthenticationManager : IJwtAuthenticationManager
     {
-        private readonly string key;
+        private readonly string _key;
 
         public JwtAuthenticationManager(string key)
         {
-            this.key = key;
+            _key = key;
         }
 
-        public string Authenticate(string emailAddress, string password, List<User> users)
+        public string Authenticate(UserCred userCred, List<User> users)
         {
-            var user = users.FirstOrDefault(x => x.EmailAddress == emailAddress);
+            var user = users.FirstOrDefault(x => x.EmailAddress == userCred.EmailAddress);
             bool isValidPassword = false;
             if (user != null)
             {
-                isValidPassword = BCrypt.Net.BCrypt.Verify(password, user.Password);
+                isValidPassword = BCrypt.Net.BCrypt.Verify(userCred.Password, user.Password);
             }
-            if(!users.Any(u => u.EmailAddress == emailAddress && isValidPassword))
+            if(!users.Any(u => u.EmailAddress == userCred.EmailAddress && isValidPassword))
             {
                 return null;
             }
 
-            var loggedUser = users.First(user => user.EmailAddress == emailAddress);
+            var loggedUser = users.First(user => user.EmailAddress == userCred.EmailAddress);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenKey = Encoding.ASCII.GetBytes(key);
+            var tokenKey = Encoding.ASCII.GetBytes(_key);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[] {
-                    new Claim(ClaimTypes.Name, emailAddress),
+                    new Claim(ClaimTypes.Name, userCred.EmailAddress),
                     new Claim("role", loggedUser.Role)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
@@ -48,6 +48,51 @@ namespace ToDoList.RestfulAPI.Models
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public string GenerateJwtToken(int userId)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenKey = Encoding.ASCII.GetBytes(_key);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { 
+                    new Claim("id", userId.ToString()) }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(tokenKey), 
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public int? ValidateJwtToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenKey = Encoding.ASCII.GetBytes(_key);
+            try
+            {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(tokenKey),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                // return account id from JWT token if validation successful
+                return accountId;
+            }
+            catch
+            {
+                // return null if validation fails
+                return null;
+            }
         }
     }
 }
