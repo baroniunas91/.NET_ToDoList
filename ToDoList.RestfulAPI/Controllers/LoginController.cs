@@ -70,7 +70,7 @@ namespace ToDoList.RestfulAPI.Controllers
         }
 
         [HttpPost("ForgotPasswordEmail")]
-        public async Task<IActionResult> ForgotPasswordEmail([FromBody] ForgotPasswordEmail forgotPasswordEmail)
+        public async Task<IActionResult> ForgotPasswordEmail([FromBody] ForgotPasswordEmailDto forgotPasswordEmail)
         {
             var users = await _context.Users.OrderBy(x => x.Id).ToListAsync();
             var user = users.FirstOrDefault(x => x.EmailAddress == forgotPasswordEmail.EmailAddress);

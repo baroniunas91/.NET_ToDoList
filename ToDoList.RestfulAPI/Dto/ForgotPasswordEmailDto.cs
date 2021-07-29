@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ToDoList.RestfulAPI.Models
+namespace ToDoList.RestfulAPI.Dto
 {
-    public class ForgotPasswordEmail
+    public class ForgotPasswordEmailDto
     {
         [Required]
         [EmailAddress(ErrorMessage = "There is no such user")]

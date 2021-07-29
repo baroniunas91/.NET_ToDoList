@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using ToDoList.RestfulAPI.Models;
+using ToDoList.RestfulAPI.Dto;
 
 namespace ToDoList.RestfulAPI.Services
 {
@@ -16,7 +16,7 @@ namespace ToDoList.RestfulAPI.Services
         {
             _config = configuration;
         }
-        public static async Task Send(ForgotPasswordEmail forgotPasswordEmail, string resetPasswordUrl)
+        public static async Task Send(ForgotPasswordEmailDto forgotPasswordEmail, string resetPasswordUrl)
         {
             var sender = new SmtpSender(() => new SmtpClient("smtp.gmail.com", 587)
             {
