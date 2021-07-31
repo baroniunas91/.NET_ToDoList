@@ -5,7 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using ToDoList.RestfulAPI.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ToDoList.RestfulAPI.Models
 {
@@ -18,7 +20,7 @@ namespace ToDoList.RestfulAPI.Models
             _key = key;
         }
 
-        public string Authenticate(UserCred userCred, List<User> users)
+        public string Authenticate(UserCredDto userCred, List<User> users)
         {
             var user = users.FirstOrDefault(x => x.EmailAddress == userCred.EmailAddress);
             bool isValidPassword = false;

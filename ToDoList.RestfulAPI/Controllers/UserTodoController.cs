@@ -33,7 +33,7 @@ namespace ToDoList.RestfulAPI.Controllers
         {
             _loggedUser = User.FindFirst(ClaimTypes.Name)?.Value;
             await _userTodoRepository.AddUserTodo(todoDto, _loggedUser);
-            return Ok();
+            return Ok("Successfully added.");
         }
 
         [HttpPut]
@@ -43,7 +43,7 @@ namespace ToDoList.RestfulAPI.Controllers
             try
             {
                 await _userTodoRepository.UpdateUserTodo(todoDto, _loggedUser);
-                return Ok();
+                return Ok("Successfully updated.");
             }
             catch (Exception)
             {
@@ -58,13 +58,12 @@ namespace ToDoList.RestfulAPI.Controllers
             try
             {
                 await _userTodoRepository.DeleteUserTodo(id, _loggedUser);
-                return Ok();
+                return Ok("Successfully deleted.");
             }
             catch(Exception)
             {
                 return BadRequest("The is no such todo in your todos list!");
             }
         }
-
     }
 }

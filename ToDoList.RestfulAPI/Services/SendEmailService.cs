@@ -5,25 +5,35 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using ToDoList.RestfulAPI.Dto;
+using ToDoList.RestfulAPI.Interfaces;
 
 namespace ToDoList.RestfulAPI.Services
 {
-    public class SendEmailService
+    public class SendEmailService : ISendEmailService
     {
         private readonly IConfiguration _config;
+        private readonly string _senderEmail;
+        private readonly string _password;
+        private readonly string _smtpServerHost;
+        private readonly int _smtpServerPort;
+        private readonly string _emailToSend;
 
         public SendEmailService(IConfiguration configuration)
         {
             _config = configuration;
+            _senderEmail = _config.GetSection("Credentials").GetSection("SenderEmail").Value;
+            _password = _config.GetSection("Credentials").GetSection("Password").Value;
+            _smtpServerHost = _config.GetValue<string>("SmtpServerHost");
+            _smtpServerPort = int.Parse(_config.GetValue<string>("SmtpServerPort"));
         }
-        public static async Task Send(ForgotPasswordEmailDto forgotPasswordEmail, string resetPasswordUrl)
+
+        public async Task Send(ForgotPasswordEmailDto forgotPasswordEmail, string resetPasswordUrl)
         {
-            var sender = new SmtpSender(() => new SmtpClient("smtp.gmail.com", 587)
+            var sender = new SmtpSender(() => new SmtpClient(_smtpServerHost, _smtpServerPort)
             {
                 EnableSsl = true,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
-                Port = 25,
-                Credentials = new NetworkCredential("smtpedgaras@gmail.com", "testas1234"),
+                Credentials = new NetworkCredential(_senderEmail, _password),
             });
 
             Email.DefaultSender = sender;
@@ -33,15 +43,11 @@ namespace ToDoList.RestfulAPI.Services
                 $"<p>{resetPasswordUrl}</p>";
 
             var email = await Email
-                .From("smtpedgaras@gmail.com")
-                .To("baroniunas@gmail.com")
+                .From(_senderEmail, "EdgaroSMTP")
+                .To(forgotPasswordEmail.EmailAddress)
                 .Subject("Reset password link")
                 .UsingTemplate(formattedHtml, true)
                 .SendAsync();
-        }
-        public void kazkas()
-        {
-            _config.GetValue<string>("MyKey");
         }
     }
 }

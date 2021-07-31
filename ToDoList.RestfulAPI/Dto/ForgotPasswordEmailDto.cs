@@ -5,7 +5,7 @@ namespace ToDoList.RestfulAPI.Dto
     public class ForgotPasswordEmailDto
     {
         [Required]
-        [EmailAddress(ErrorMessage = "There is no such user")]
+        [EmailAddress(ErrorMessage = "Invalid Email")]
         public string EmailAddress { get; set; }
     }
 }

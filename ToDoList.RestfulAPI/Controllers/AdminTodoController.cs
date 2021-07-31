@@ -30,7 +30,7 @@ namespace ToDoList.RestfulAPI.Controllers
             try
             {
                 await _adminTodoRepository.DeleteTodo(id);
-                return Ok();
+                return Ok("Successfully deleted.");
             }
             catch (Exception)
             {

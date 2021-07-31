@@ -35,7 +35,6 @@ namespace ToDoList.RestfulAPI.Services
             {
                 using (var context = serviceScope.ServiceProvider.GetService<MyDbContext>())
                 {
-                    //seed admin and users
                     if (!context.Users.Any())
                     {
                         var password = BCrypt.Net.BCrypt.HashPassword("labasrytas123");
@@ -65,7 +64,6 @@ namespace ToDoList.RestfulAPI.Services
                         context.Users.Add(user2);
                     }
                     context.SaveChanges();
-                    //seed todos
                     if (!context.Todos.Any())
                     {
                         var todo1 = new Todo

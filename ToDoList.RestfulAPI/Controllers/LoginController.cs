@@ -1,17 +1,12 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ToDoList.RestfulAPI.Data;
 using ToDoList.RestfulAPI.Dto;
 using ToDoList.RestfulAPI.Interfaces;
 using ToDoList.RestfulAPI.Models;
-using ToDoList.RestfulAPI.Services;
 
 namespace ToDoList.RestfulAPI.Controllers
 {
@@ -20,66 +15,63 @@ namespace ToDoList.RestfulAPI.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
-        private readonly MyDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly ILoginRepository _loginRepository;
         private readonly IConfiguration _config;
+        private readonly ISendEmailService _sendEmailService;
 
-        public LoginController(IJwtAuthenticationManager jwtAuthenticationManager, MyDbContext context, IMapper mapper, IConfiguration configuration)
+        public LoginController(IJwtAuthenticationManager jwtAuthenticationManager, ILoginRepository loginRepository, IConfiguration configuration, ISendEmailService sendEmailService)
         {
             _jwtAuthenticationManager = jwtAuthenticationManager;
-            _context = context;
-            _mapper = mapper;
+            _loginRepository = loginRepository;
             _config = configuration;
+            _sendEmailService = sendEmailService;
         }
 
         [HttpGet]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Get()
         {
-            var users = await _context.Users.OrderBy(x => x.Id).ToListAsync();
-            var usersDto = new List<UserDto>();
-            foreach (var user in users)
-            {
-                var userDto = _mapper.Map<UserDto>(user);
-                usersDto.Add(userDto);
-            }
-            return Ok(usersDto);
+            var users = await _loginRepository.GetUsersDto();
+            return Ok(users);
         }
 
-        [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] UserCred userCred)
+        [HttpPost("Authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] UserCredDto userCred)
         {
-            var users = await _context.Users.OrderBy(x => x.Id).ToListAsync();
+            var users = await _loginRepository.GetUsers();
             var token = _jwtAuthenticationManager.Authenticate(userCred, users);
             if (token == null)
             {
                 return Unauthorized();
             };
-            return Ok(token);
+            return Ok($"Bearer {token}");
         }
 
-        [HttpPost("signup")]
-        public async Task<IActionResult> SignUp([FromBody] UserCred userCred)
+        [HttpPost("SignUp")]
+        public async Task<IActionResult> SignUp([FromBody] UserCredDto userCred)
         {
-            userCred.Password = BCrypt.Net.BCrypt.HashPassword(userCred.Password);
-            var user = _mapper.Map<User>(userCred);
-            user.Role = "user";
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return Ok();
+            try
+            {
+                await _loginRepository.SignUpUser(userCred);
+                return Ok("You have successfully signed up");
+            }
+            catch (Exception)
+            {
+                return BadRequest("User already exist!");
+            }
         }
 
         [HttpPost("ForgotPasswordEmail")]
         public async Task<IActionResult> ForgotPasswordEmail([FromBody] ForgotPasswordEmailDto forgotPasswordEmail)
         {
-            var users = await _context.Users.OrderBy(x => x.Id).ToListAsync();
+            var users = await _loginRepository.GetUsers();
             var user = users.FirstOrDefault(x => x.EmailAddress == forgotPasswordEmail.EmailAddress);
             if (user != null)
             {
                 var token = _jwtAuthenticationManager.GenerateJwtToken(user.Id);
                 string url = $"{_config["AppUrl"]}/Login/ResetPassword?userId={user.Id}&token={token}";
-                await SendEmailService.Send(forgotPasswordEmail, url);
-                return Ok("Reset Password link was sent to your email. Go check it!");
+                await _sendEmailService.Send(forgotPasswordEmail, url);
+                return Ok($"Reset password link was sent to your email. Go check it! FOR TESTING PURPOSES: userId={user.Id} token={token}");
             }
             else
             {
@@ -99,10 +91,7 @@ namespace ToDoList.RestfulAPI.Controllers
             {
                 try
                 {
-                    var user = await _context.Users.FirstAsync(x => x.Id == userIdfromToken);
-                    user.Password = BCrypt.Net.BCrypt.HashPassword(resetPasswordDto.NewPassword);
-                    _context.Users.Update(user);
-                    await _context.SaveChangesAsync();
+                    await _loginRepository.ResetPassword(userId, resetPasswordDto);
                     return Ok("Password changed successfully!");
                 }
                 catch (Exception)
@@ -113,7 +102,6 @@ namespace ToDoList.RestfulAPI.Controllers
             {
                 return BadRequest("Sorry, something went wrong!");
             }
-            
         }
     }
 }

@@ -32,7 +32,9 @@ namespace ToDoList.RestfulAPI
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddDbContext<MyDbContext>(o => o.UseMySQL(Configuration.GetConnectionString("Default")));
             services.AddScoped<IAdminTodoRepository, AdminTodoRepository>();
+            services.AddScoped<ILoginRepository, LoginRepository>();
             services.AddScoped<IUserTodoRepository, UserTodoRepository>();
+            services.AddScoped<ISendEmailService, SendEmailService>();
             services.AddControllers();
             services.AddAuthentication(x =>
             {
